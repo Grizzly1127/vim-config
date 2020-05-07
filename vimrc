@@ -2,7 +2,8 @@
 " |                          base config                            |
 " -------------------------------------------------------------------
 set nu				" 显示行号
-syntax on			" 语法高亮 set showcmd     	" 输入的命令显示出来，看的清楚些
+syntax on			" 语法高亮 
+set showcmd     	" 输入的命令显示出来，看的清楚些
 set cursorline		" 当前行显示 
 set autoindent      " 自动缩进
 set cindent
