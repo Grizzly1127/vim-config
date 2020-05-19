@@ -47,6 +47,13 @@ Plug 'rkulla/pydiction'
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 Plug 'vim-scripts/taglist.vim'
 
+" 状态栏美化
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" 快速注释
+Plug 'preservim/nerdcommenter'
+
 Plug 'ycm-core/YouCompleteMe'
 
 " Initialize plugin system
@@ -151,6 +158,26 @@ let Tlist_Exit_OnlyWindow = 1   " 如果taglist窗口是最后一个窗口，则
 let Tlist_WinWidth = 35         " 设置窗体宽度，可以根据自己喜好设置
 let Tlist_Ctags_Cmd = '/usr/bin/ctags'  " 设置ctags的位置
 map <silent> <F3> :Tlist<CR> 
+
+" [airline]
+set t_Co=256      "在windows中用xshell连接打开vim可以显示色彩
+let g:airline#extensions#tabline#enabled = 1   " 是否打开tabline
+"这个是安装字体后 必须设置此项"
+let g:airline_powerline_fonts = 1
+set laststatus=2  "永远显示状态栏
+let g:airline_theme='bubblegum' "选择主题
+let g:airline#extensions#tabline#enabled=1    "Smarter tab line: 显示窗口tab和buffer
+"let g:airline#extensions#tabline#left_sep = ' '  "separater
+"let g:airline#extensions#tabline#left_alt_sep = '|'  "separater
+"let g:airline#extensions#tabline#formatter = 'default'  "formater
+let g:airline_left_sep = '▶'
+let g:airline_left_alt_sep = '❯'
+let g:airline_right_sep = '◀'
+let g:airline_right_alt_sep = '❮'
+
+" [nerdcommenter]
+let g:NERDSpaceDelims = 1   " 注释中间加一个空格
+let g:NERDDefaultAlign = 'left' " 多行注释向左对齐
 
 
 " -------------------------------------------------------------------
