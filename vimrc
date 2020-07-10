@@ -80,6 +80,10 @@ Plug 'zchee/deoplete-jedi'
 " c/c++补全
 Plug 'Shougo/deoplete-clangx'
 
+" 异步检查
+" Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
+
 " Initialize plugin system
 call plug#end()
 
@@ -206,6 +210,51 @@ let g:NERDDefaultAlign = 'left' " 多行注释向左对齐
 " [deoplete]
 set pyxversion=3
 let g:deoplete#enable_at_startup=1
+
+" [ale]
+" 始终开启标志列
+let g:ale_sign_column_always = 1
+" 不需要高亮行
+let g:ale_set_highlights = 0
+" 自定义error和warning图标
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
+" 显示Linter名称,出错或警告等相关信息
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" 普通模式下，sp前往上一个错误或警告，sn前往下一个错误或警告
+nmap sp <Plug>(ale_previous_wrap)
+nmap sn <Plug>(ale_next_wrap)
+" <Leader>s触发/关闭语法检查
+nmap <Leader>s :ALEToggle<CR>
+" <Leader>d查看错误或警告的详细信息
+nmap <Leader>d :ALEDetail<CR>
+" 设置状态栏显示的内容
+let g:airline#extensions#ale#enabled = 1
+
+" 启动检查方式
+let g:ale_lint_on_text_changed = 'normal' " 代码更改后启动检查
+let g:ale_lint_on_insert_leave = 1        " 退出插入模式即检查
+
+" 设置c/c++的检查选项
+" C 语言配置检查参数
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_c_clang_options = '-Wall -O2 -std=c99'
+let g:ale_c_cppcheck_options = '--enable=all'
+
+" C++ 配置检查参数
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++11'
+let g:ale_cpp_clang_options = '-Wall -O2 -std=c++11'
+let g:ale_cpp_cppcheck_options = '--enable=all'
+
+" 使用cppcheck对c和c++进行语法检查，对python使用pylint进行语法检查
+" 需要额外安装cppcheck,clang,gcc,pylint
+let g:ale_linters = {
+\   'cpp': ['cppcheck','clang','gcc'],
+\   'c': ['cppcheck','clang','gcc'],
+\   'python': ['pylint'],
+\}
 
 " -------------------------------------------------------------------
 " |                          other config                           |
