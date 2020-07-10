@@ -41,20 +41,44 @@ set completeopt=menu
 call plug#begin('~/.vim/plugged')
 
 " Make sure you use single quotes
+" [目录树]
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'rkulla/pydiction'
+
+" [python补全]
+" Plug 'rkulla/pydiction'
+
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+" [函数列表]
 Plug 'vim-scripts/taglist.vim'
 
-" 状态栏美化
+" [状态栏美化]
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" 快速注释
+" [快速注释]
 Plug 'preservim/nerdcommenter'
 
-Plug 'ycm-core/YouCompleteMe'
+" [代码补全YouCompleteMe]
+" Plug 'ycm-core/YouCompleteMe'
+
+" [代码补全deoplete]
+" 安装依赖：
+" pip3 install pynvim
+" pip3 install neovim
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+" python补全
+" 安装依赖：
+" pip3 install jedi
+Plug 'zchee/deoplete-jedi'
+" c/c++补全
+Plug 'Shougo/deoplete-clangx'
 
 " Initialize plugin system
 call plug#end()
@@ -62,7 +86,7 @@ call plug#end()
 " -------------------------------------------------------------------
 " |                          plugin config                          |
 " -------------------------------------------------------------------
-" nerdtree
+" [nerdtree]
 autocmd vimenter * NERDTree  "自动开启Nerdtree
 " 关闭所有文本窗口时自动退出vim,否则需要两次退出才可
 autocmd BufEnter * if 0 == len(filter(range(1, winnr('$')), 'empty(getbufvar(winbufnr(v:val), "&bt"))')) | qa! | endif
@@ -86,12 +110,12 @@ let g:NERDTreeIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
-" pydiction
+" [pydiction]
 filetype plugin on
 let g:pydiction_location = '~/.vim/plugged/pydiction/complete-dict'
 " let g:pydiction_menu_height = 6
 
-" YouCompleteMe
+" [YouCompleteMe]
 let g:ycm_python_binary_path = '/usr/bin/python3'
 " 寻找全局配置文件
 let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
@@ -142,13 +166,13 @@ let g:ycm_key_list_previous_completion = ['<Up>']
 "let g:pymode_python = 'python3'
 "endif
 
-" leaderF
+" [leaderF]
 " Ctrl + p 打开文件搜索
 let g:Lf_ShortcutF = '<c-p>'    
 "\p 打开函数列表
 noremap <Leader>p :LeaderfFunction<CR>
 
-" taglist
+" [taglist]
 let Tlist_Use_Right_Window = 1  " 让taglist窗口出现在Vim的右边
 let Tlist_File_Fold_Auto_Close = 1 " 当同时显示多个文件中的tag时，设置为1，可使taglist只显示当前文件tag，其它文件的tag都被折叠起来
 let Tlist_Show_One_File = 1     " 只显示一个文件中的tag，默认为显示多个
@@ -179,6 +203,9 @@ let g:airline_right_alt_sep = '❮'
 let g:NERDSpaceDelims = 1   " 注释中间加一个空格
 let g:NERDDefaultAlign = 'left' " 多行注释向左对齐
 
+" [deoplete]
+set pyxversion=3
+let g:deoplete#enable_at_startup=1
 
 " -------------------------------------------------------------------
 " |                          other config                           |
@@ -205,3 +232,37 @@ endfunc
 
 set tags=/home/lihuixiong/c++/tags
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+
+" [cscope]
+cs add /home/lihuixiong/c++/cscope.out
+" 按ctrl+\，松开后按相应的键（s/g/c/d等）执行cscope命令
+
+" 查找C语言符号，即查找函数名、宏、枚举值等出现的地方
+nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+" 查找函数、宏、枚举等定义的位置，类似ctags所提供的功能
+nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+" 查找调用本函数的函数
+nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+" 查找本函数调用的函数
+nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+" 查找指定的字符串
+nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+" 查找egrep模式，相当于egrep功能，但查找速度快多了
+nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+" 查找并打开文件，类似vim的find功能
+nmap <C-\>f :cs find f <C-R>=expand("<cword>")<CR><CR>
+
+" [tablist标签页]
+let mapleader=","
+noremap <silent><leader>t :tabnew<cr>
+noremap <silent><leader>g :tabclose<cr>
+noremap <silent><leader>1 :tabn 1<cr>
+noremap <silent><leader>2 :tabn 2<cr>
+noremap <silent><leader>3 :tabn 3<cr>
+noremap <silent><leader>4 :tabn 4<cr>
+noremap <silent><leader>5 :tabn 5<cr>
+noremap <silent><leader>6 :tabn 6<cr>
+noremap <silent><leader>7 :tabn 7<cr>
+noremap <silent><leader>8 :tabn 8<cr>
+noremap <silent><leader>9 :tabn 9<cr>
+noremap <silent><leader>0 :tabn 10<cr>
