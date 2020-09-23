@@ -29,8 +29,10 @@ set backspace=2     " 使回格键（backspace）正常处理indent, eol, start�
 set showmatch       " 高亮显示匹配的括号
 set scrolloff=3     " 光标移动到buffer的顶部和底部时保持3行距离
 set completeopt=menu
-
-
+" 相关颜色替换
+hi Search term=standout cterm=bold ctermfg=7 ctermbg=1
+hi SpellBad term=reverse ctermfg=15 ctermbg=9 guifg=White guibg=Red
+let mapleader=','
 
 " -------------------------------------------------------------------
 " |                         plugin install                          |
@@ -44,13 +46,8 @@ call plug#begin('~/.vim/plugged')
 " [目录树]
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-
-" [python补全]
-" Plug 'rkulla/pydiction'
-
-Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 " [函数列表]
-Plug 'vim-scripts/taglist.vim'
+Plug 'preservim/tagbar'
 
 " [状态栏美化]
 Plug 'vim-airline/vim-airline'
@@ -59,30 +56,18 @@ Plug 'vim-airline/vim-airline-themes'
 " [快速注释]
 Plug 'preservim/nerdcommenter'
 
-" [代码补全YouCompleteMe]
-" Plug 'ycm-core/YouCompleteMe'
+" [gocode]
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 
-" [代码补全deoplete]
-" 安装依赖：
-" pip3 install pynvim
-" pip3 install neovim
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-" python补全
-" 安装依赖：
-" pip3 install jedi
-Plug 'zchee/deoplete-jedi'
-" c/c++补全
-Plug 'Shougo/deoplete-clangx'
+" [代码补全]
+Plug 'Valloric/YouCompleteMe'
 
-" 异步检查
+
+" [异步检查]
 " Plug 'w0rp/ale'
 Plug 'dense-analysis/ale'
+
 
 " Initialize plugin system
 call plug#end()
@@ -114,78 +99,22 @@ let g:NERDTreeIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
-" [pydiction]
-filetype plugin on
-let g:pydiction_location = '~/.vim/plugged/pydiction/complete-dict'
-" let g:pydiction_menu_height = 6
-
-" [YouCompleteMe]
-let g:ycm_python_binary_path = '/usr/bin/python3'
-" 寻找全局配置文件
-let g:ycm_global_ycm_extra_conf = '~/.vim/plugged/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
-" c++11
-let g:syntastic_cpp_compiler = 'g++'
-let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libc++'
-" 对全局namespace支持补全
-let g:ycm_semantic_triggers =  {
-  \   'c' : ['->', '.','re![_a-zA-z0-9]'],
-  \   'objc' : ['->', '.', 're!\[[_a-zA-Z]+\w*\s', 're!^\s*[^\W\d]\w*\s',
-  \             're!\[.*\]\s'],
-  \   'ocaml' : ['.', '#'],
-  \   'cpp,objcpp' : ['->', '.', '::','re![_a-zA-Z0-9]'],
-  \   'perl' : ['->'],
-  \   'php' : ['->', '::'],
-  \   'cs,java,javascript,typescript,d,python,perl6,scala,vb,elixir,go' : ['.'],
-  \   'ruby' : ['.', '::'],
-  \   'lua' : ['.', ':'],
-  \   'erlang' : [':'],
-  \ }
-
-" 跳转快捷键
-nnoremap <c-k> :YcmCompleter GoToDeclaration<CR>|
-nnoremap <c-h> :YcmCompleter GoToDefinition<CR>|
-nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|
-
-" 停止提示是否载入本地ycm_extra_conf文件
-let g:ycm_confirm_extra_conf = 0
-" 语法关键字补全
-let g:ycm_seed_identifiers_with_syntax = 1
-" 开启 YCM 基于标签引擎
-let g:ycm_collect_identifiers_from_tags_files = 1
-" 从第2个键入字符就开始罗列匹配项
-let g:ycm_min_num_of_chars_for_completion=2
-" 在注释输入中也能补全
-let g:ycm_complete_in_comments = 1
-" 在字符串输入中也能补全
-let g:ycm_complete_in_strings = 1
-" 弹出列表时选择第1项的快捷键(默认为<TAB>和<Down>)
-let g:ycm_key_list_select_completion = ['<Down>']
-" 弹出列表时选择前1项的快捷键(默认为<S-TAB>和<UP>)
-let g:ycm_key_list_previous_completion = ['<Up>']
-" ycm默认需要按ctrl + space 来进行补全，可以在上面的花括号里面加入下面两行代码来直接进行补全[不需要按键]
-
-"if has('python3')
-"let g:loaded_youcompleteme = 1 " 判断如果是python3的话，就禁用ycmd。
-"let g:jedi#force_py_version = 3
-"let g:pymode_python = 'python3'
-"endif
-
-" [leaderF]
-" Ctrl + p 打开文件搜索
-let g:Lf_ShortcutF = '<c-p>'    
-"\p 打开函数列表
-noremap <Leader>p :LeaderfFunction<CR>
-
-" [taglist]
-let Tlist_Use_Right_Window = 1  " 让taglist窗口出现在Vim的右边
-let Tlist_File_Fold_Auto_Close = 1 " 当同时显示多个文件中的tag时，设置为1，可使taglist只显示当前文件tag，其它文件的tag都被折叠起来
-let Tlist_Show_One_File = 1     " 只显示一个文件中的tag，默认为显示多个
-let Tlist_Sort_Type ='name'     " Tag的排序规则，以名字排序。默认是以在文件中出现的顺序排序
-let Tlist_GainFocus_On_ToggleOpen = 1 " Taglist窗口打开时，立刻切换为有焦点状态
-let Tlist_Exit_OnlyWindow = 1   " 如果taglist窗口是最后一个窗口，则退出vim
-let Tlist_WinWidth = 35         " 设置窗体宽度，可以根据自己喜好设置
-let Tlist_Ctags_Cmd = '/usr/bin/ctags'  " 设置ctags的位置
-map <silent> <F3> :Tlist<CR> 
+" [tagbar]
+" 设置tagbar使用的ctags的插件,必须要设置对
+let g:tagbar_ctags_bin='/usr/bin/ctags'
+" 设置tagbar的窗口宽度
+let g:tagbar_width=35
+" 设置tagbar的窗口显示的位置,默认右边
+let g:tagbar_right=1
+" 打开文件自动 打开tagbar
+" autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx call tagbar#autoopen()
+" 这是tagbar一打开，光标即在tagbar页面内，默认在vim打开的文件内
+let g:tagbar_autofocus = 1
+"设置标签不排序，默认排序
+let g:tagbar_sort = 0
+" 映射tagbar的快捷键
+nnoremap <silent> <F3> :TagbarToggle<CR>
+" nmap <silent> <F3> :TagbarToggle<CR>
 
 " [airline]
 set t_Co=256      "在windows中用xshell连接打开vim可以显示色彩
@@ -194,7 +123,7 @@ let g:airline#extensions#tabline#enabled = 1   " 是否打开tabline
 let g:airline_powerline_fonts = 1
 set laststatus=2  "永远显示状态栏
 let g:airline_theme='bubblegum' "选择主题
-let g:airline#extensions#tabline#enabled=1    "Smarter tab line: 显示窗口tab和buffer
+let g:airline#extensions#tabline#enabled=1    "Smarter tab line:显示窗口tab和buffer
 "let g:airline#extensions#tabline#left_sep = ' '  "separater
 "let g:airline#extensions#tabline#left_alt_sep = '|'  "separater
 "let g:airline#extensions#tabline#formatter = 'default'  "formater
@@ -207,9 +136,33 @@ let g:airline_right_alt_sep = '❮'
 let g:NERDSpaceDelims = 1   " 注释中间加一个空格
 let g:NERDDefaultAlign = 'left' " 多行注释向左对齐
 
-" [deoplete]
-set pyxversion=3
-let g:deoplete#enable_at_startup=1
+
+" [YouCompleteMe]
+let g:ycm_confirm_extra_conf=0      " 关闭加载.ycm_extra_conf.py提示
+let g:ycm_complete_in_comments = 1  "在注释输入中也能补全
+let g:ycm_complete_in_strings = 1   "在字符串输入中也能补全
+let g:ycm_collect_identifiers_from_tags_files=1                 " 开启 YCM 基于标签引擎
+let g:ycm_collect_identifiers_from_comments_and_strings = 1   "注释和字符串中的文字也会被收入补全
+let g:ycm_seed_identifiers_with_syntax=1   "语言关键字补全, 不过python关键字都很短，所以，需要的自己打开
+let g:ycm_min_num_of_chars_for_completion=2                     " 从第2个键入字符就开始罗列匹配项
+" 引入，可以补全系统，以及python的第三方包 针对新老版本YCM做了兼容
+if !empty(glob("~/..vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py"))
+    let g:ycm_global_ycm_extra_conf = "~/..vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py"
+endif
+
+"mapping
+nmap <leader>gd :YcmDiags<CR>
+nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>           " 跳转到申明处
+nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>            " 跳转到定义处
+nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+" 直接触发自动补全
+let g:ycm_key_invoke_completion = '<C-Space>'
+" 黑名单,不启用
+let g:ycm_filetype_blacklist = {
+      \ 'tagbar' : 1,
+      \ 'gitcommit' : 1,
+      \}
 
 " [ale]
 " 始终开启标志列
@@ -279,9 +232,6 @@ func! CompileRunGcc()
     endif
 endfunc
 
-set tags=/home/lihuixiong/c++/tags
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
-
 " [cscope]
 cs add /home/lihuixiong/c++/cscope.out
 " 按ctrl+\，松开后按相应的键（s/g/c/d等）执行cscope命令
@@ -301,8 +251,7 @@ nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
 " 查找并打开文件，类似vim的find功能
 nmap <C-\>f :cs find f <C-R>=expand("<cword>")<CR><CR>
 
-" [tablist标签页]
-let mapleader=","
+" [标签页]
 noremap <silent><leader>t :tabnew<cr>
 noremap <silent><leader>g :tabclose<cr>
 noremap <silent><leader>1 :tabn 1<cr>
